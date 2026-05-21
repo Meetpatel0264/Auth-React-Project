@@ -33,12 +33,14 @@ const Login = () => {
   };
 
   const handleSubmit = (e) => {
-  e.preventDefault();
-
-  localStorage.setItem("token", "test-token");
-
-  navigate("/");
-};
+    e.preventDefault();
+    dispatch(loginUser(formData));
+  };
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   return (
     <div

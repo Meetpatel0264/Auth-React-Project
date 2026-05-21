@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import {
+import React, {
+  useState,
+  useEffect,
+} from "react"; import {
   Search,
   Bell,
   Play,
@@ -12,7 +14,28 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-    
+
+  const navigate = useNavigate();
+  const [openMenu, setOpenMenu] = useState(false);
+
+  useEffect(() => {
+    const token =
+      localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const handleChangePassword = () => {
+    navigate("/change-password");
+  };
+
   const featuredMovie = {
     title: "Stranger Things",
     description:
@@ -56,7 +79,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      
+
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md">
         <div className="flex items-center justify-between px-8 py-4">
