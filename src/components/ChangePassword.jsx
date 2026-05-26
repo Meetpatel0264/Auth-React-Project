@@ -1,150 +1,199 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Lock } from "lucide-react";
 import { changePassword } from "../redux/slices/authSlice";
 
 const ChangePassword = () => {
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user } = useSelector((state) => state.auth);
 
-    const [formData, setFormData] = useState({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-    });
-    const [error, setError] = useState("");
+    const { user } = useSelector(
+        (state) => state.auth
+    );
+
+    const [formData, setFormData] =
+        useState({
+            oldPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        });
+
+    const [error, setError] =
+        useState("");
 
     useEffect(() => {
         if (!user) {
             navigate("/");
         }
-    }, [user]);
+    }, [user, navigate]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const { name, value } =
+            e.target;
+
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         setError("");
 
-        if (formData.newPassword !== formData.confirmPassword) {
-            setError("New password and confirm password do not match");
+        if (
+            formData.newPassword !==
+            formData.confirmPassword
+        ) {
+            setError(
+                "New password and confirm password do not match"
+            );
             return;
         }
 
-        if (formData.oldPassword === formData.newPassword) {
-            setError("New password must be different from old password");
+        if (
+            formData.oldPassword ===
+            formData.newPassword
+        ) {
+            setError(
+                "New password must be different from old password"
+            );
             return;
         }
 
-        const res = await dispatch(changePassword({
-            oldPassword: formData.oldPassword,
-            newPassword: formData.newPassword,
-            token: user.token
-        }));
+        const token =
+            user?.token ||
+            JSON.parse(
+                localStorage.getItem("token")
+            );
+
+        const res = await dispatch(
+            changePassword({
+                oldPassword: formData.oldPassword,
+                newPassword: formData.newPassword,
+                token,
+            })
+        );
 
         if (res.meta.requestStatus === "fulfilled") {
-            navigate("/");
+            alert("Password Updated Successfully");
+
+            navigate("/dashboard", {
+                replace: true,
+            });
         }
 
-        if (res.meta.requestStatus === "rejected") {
-            setError(res.payload || "Old password is incorrect");
+        if (
+            res.meta.requestStatus ===
+            "rejected"
+        ) {
+            setError(
+                res.payload ||
+                "Old password is incorrect"
+            );
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#040406] relative overflow-hidden">
-            <div className="absolute w-[600px] h-[600px] bg-cyan-500/30 blur-[140px] rounded-full top-[-120px] left-[-120px] animate-pulse" />
-            <div className="absolute w-[500px] h-[500px] bg-purple-600/30 blur-[140px] rounded-full bottom-[-150px] right-[-120px] animate-pulse" />
-            <div className="absolute w-[400px] h-[400px] bg-pink-500/30 blur-[120px] rounded-full top-[40%] left-[60%] animate-pulse" />
+        <div
+            className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+            style={{
+                backgroundImage:
+                    "url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1920')",
+            }}
+        >
+            {/* Dark Overlay */}
+            <div className="absolute inset-0 bg-black/75"></div>
 
-            <div className="relative z-10 w-full max-w-md p-[1px] rounded-2xl bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
-                <div className="rounded-2xl bg-[#0b0b0f]/95 backdrop-blur-2xl border border-white/10 p-8">
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-white tracking-tight bg-gradient-to-r from-cyan-300 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                            Change Password
-                        </h2>
-                        <p className="text-white/50 text-sm mt-1">
-                            Update your password 🔐
-                        </p>
-                    </div>
+            {/* Netflix Logo */}
+            <h1 className="absolute top-6 left-10 text-red-600 text-4xl font-bold z-20 tracking-wide">
+                NETFLIX
+            </h1>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="relative group">
-                            <input
-                                type="password"
-                                name="oldPassword"
-                                value={formData.oldPassword}
-                                onChange={handleChange}
-                                required
-                                placeholder="Old Password"
-                                className="peer w-full px-4 pt-6 pb-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-                            />
-                            <label className="absolute left-4 top-2 text-xs text-white/60 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-cyan-300">
-                                Old Password
-                            </label>
-                        </div>
+            {/* Form Card */}
+            <div className="relative z-10 w-full max-w-md bg-black/80 backdrop-blur-sm p-10 rounded-md shadow-2xl">
+                <div className="flex items-center gap-3 mb-8">
+                    <Lock
+                        size={30}
+                        className="text-red-600"
+                    />
 
-                        <div className="relative group">
-                            <input
-                                type="password"
-                                name="newPassword"
-                                value={formData.newPassword}
-                                onChange={handleChange}
-                                required
-                                placeholder="New Password"
-                                className="peer w-full px-4 pt-6 pb-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-                            />
-                            <label className="absolute left-4 top-2 text-xs text-white/60 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-cyan-300">
-                                New Password
-                            </label>
-                        </div>
-
-                        <div className="relative group">
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                                placeholder="Confirm Password"
-                                className="peer w-full px-4 pt-6 pb-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
-                            />
-                            <label className="absolute left-4 top-2 text-xs text-white/60 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-cyan-300">
-                                Confirm Password
-                            </label>
-                        </div>
-
-                        {error && (
-                            <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
-                                <p className="text-sm text-red-400 text-center font-medium">
-                                    {error}
-                                </p>
-                            </div>
-                        )}
-                        <button
-                            type="submit"
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-white font-semibold tracking-wide shadow-lg shadow-purple-500/40 hover:scale-[1.03] active:scale-[0.97] transition"
-                        >
-                            Update Password 🔐
-                        </button>
-                    </form>
-
-                    <p className="text-center text-sm text-white/50 mt-6">
-                        Want to go back?
-                        <span
-                            onClick={() => navigate("/")}
-                            className="text-cyan-300 font-medium cursor-pointer hover:underline ms-1"
-                        >
-                            Dashboard
-                        </span>
-                    </p>
-
+                    <h2 className="text-white text-3xl font-bold">
+                        Change Password
+                    </h2>
                 </div>
+
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-5"
+                >
+                    <input
+                        type="password"
+                        name="oldPassword"
+                        placeholder="Current Password"
+                        value={
+                            formData.oldPassword
+                        }
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-zinc-700 text-white px-4 py-4 rounded outline-none focus:ring-2 focus:ring-red-600"
+                    />
+
+                    <input
+                        type="password"
+                        name="newPassword"
+                        placeholder="New Password"
+                        value={
+                            formData.newPassword
+                        }
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-zinc-700 text-white px-4 py-4 rounded outline-none focus:ring-2 focus:ring-red-600"
+                    />
+
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm New Password"
+                        value={
+                            formData.confirmPassword
+                        }
+                        onChange={handleChange}
+                        required
+                        className="w-full bg-zinc-700 text-white px-4 py-4 rounded outline-none focus:ring-2 focus:ring-red-600"
+                    />
+
+                    {error && (
+                        <div className="bg-red-600/20 border border-red-500 text-red-300 text-sm p-3 rounded">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded transition duration-300"
+                    >
+                        Update Password
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() =>
+                            navigate("/dashboard")
+                        }
+                        className="w-full border border-gray-500 hover:border-white text-white py-3 rounded transition duration-300"
+                    >
+                        Back to Dashboard
+                    </button>
+                </form>
+
+                <p className="text-center text-gray-400 text-sm mt-6">
+                    Keep your account secure by
+                    updating your password
+                    regularly.
+                </p>
             </div>
         </div>
     );

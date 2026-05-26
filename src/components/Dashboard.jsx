@@ -1,7 +1,10 @@
 import React, {
   useState,
   useEffect,
-} from "react"; import {
+  useRef,
+} from "react";
+
+import {
   Search,
   Bell,
   Play,
@@ -12,24 +15,59 @@ import React, {
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
 
 const Dashboard = () => {
-
   const navigate = useNavigate();
-  const [openMenu, setOpenMenu] = useState(false);
+  const dispatch = useDispatch();
+
+  const [openMenu, setOpenMenu] =
+    useState(false);
+
+  const menuRef = useRef(null);
 
   useEffect(() => {
-    const token =
-      localStorage.getItem("token");
+    const token = JSON.parse(
+      localStorage.getItem("token")
+    );
 
     if (!token) {
-      navigate("/login");
+      navigate("/login", {
+        replace: true,
+      });
     }
   }, [navigate]);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target)
+      ) {
+        setOpenMenu(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
+    dispatch(logout());
+
+    navigate("/login", {
+      replace: true,
+    });
   };
 
   const handleChangePassword = () => {
@@ -93,15 +131,19 @@ const Dashboard = () => {
               <li className="cursor-pointer hover:text-gray-300">
                 Home
               </li>
+
               <li className="cursor-pointer hover:text-gray-300">
                 TV Shows
               </li>
+
               <li className="cursor-pointer hover:text-gray-300">
                 Movies
               </li>
+
               <li className="cursor-pointer hover:text-gray-300">
                 New & Popular
               </li>
+
               <li className="cursor-pointer hover:text-gray-300">
                 My List
               </li>
@@ -110,10 +152,64 @@ const Dashboard = () => {
 
           <div className="flex items-center gap-5">
             <Search size={22} />
+
             <Bell size={22} />
 
-            <div className="w-10 h-10 rounded bg-red-600 flex items-center justify-center font-bold">
-              M
+            {/* Profile Menu */}
+            <div
+              className="relative"
+              ref={menuRef}
+            >
+              <div
+                onClick={() =>
+                  setOpenMenu(!openMenu)
+                }
+                className="w-10 h-10 rounded bg-red-600 flex items-center justify-center font-bold cursor-pointer hover:bg-red-700 transition"
+              >
+                M
+              </div>
+
+              {openMenu && (
+                <div className="absolute right-0 mt-3 w-60 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl overflow-hidden">
+
+                  <div className="p-4 border-b border-zinc-700">
+                    <h3 className="font-semibold text-white">
+                      Meet Patel
+                    </h3>
+
+                    <p className="text-sm text-gray-400">
+                      meet@gmail.com
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setOpenMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-3 hover:bg-zinc-800 transition"
+                  >
+                    Profile
+                  </button>
+
+                  <button
+                    onClick={
+                      handleChangePassword
+                    }
+                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-zinc-800 transition"
+                  >
+                    <Settings size={18} />
+                    Change Password
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-3 flex items-center gap-3 text-red-500 hover:bg-zinc-800 transition"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -127,6 +223,7 @@ const Dashboard = () => {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
 
         <div className="relative z-10 max-w-2xl px-8 md:px-16">
@@ -140,7 +237,10 @@ const Dashboard = () => {
 
           <div className="flex gap-4">
             <button className="bg-white text-black px-8 py-3 rounded flex items-center gap-2 font-semibold">
-              <Play size={20} fill="black" />
+              <Play
+                size={20}
+                fill="black"
+              />
               Play
             </button>
 
@@ -151,48 +251,50 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Trending Movies */}
+      {/* Trending */}
       <section className="px-8 md:px-16 py-10">
         <h2 className="text-2xl font-bold mb-6">
           Trending Now
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-          {trendingMovies.map((movie) => (
-            <div
-              key={movie.id}
-              className="group relative overflow-hidden rounded-lg cursor-pointer"
-            >
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="w-full h-72 object-cover transition duration-300 group-hover:scale-110"
-              />
+          {trendingMovies.map(
+            (movie) => (
+              <div
+                key={movie.id}
+                className="group relative overflow-hidden rounded-lg cursor-pointer"
+              >
+                <img
+                  src={movie.image}
+                  alt={movie.title}
+                  className="w-full h-72 object-cover transition duration-300 group-hover:scale-110"
+                />
 
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-4">
-                <h3 className="font-semibold mb-3">
-                  {movie.title}
-                </h3>
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-4">
+                  <h3 className="font-semibold mb-3">
+                    {movie.title}
+                  </h3>
 
-                <div className="flex gap-2">
-                  <button className="bg-white text-black p-2 rounded-full">
-                    <Play
-                      size={16}
-                      fill="black"
-                    />
-                  </button>
+                  <div className="flex gap-2">
+                    <button className="bg-white text-black p-2 rounded-full">
+                      <Play
+                        size={16}
+                        fill="black"
+                      />
+                    </button>
 
-                  <button className="border p-2 rounded-full">
-                    <Plus size={16} />
-                  </button>
+                    <button className="border p-2 rounded-full">
+                      <Plus size={16} />
+                    </button>
 
-                  <button className="border p-2 rounded-full">
-                    <ThumbsUp size={16} />
-                  </button>
+                    <button className="border p-2 rounded-full">
+                      <ThumbsUp size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       </section>
 
@@ -203,28 +305,30 @@ const Dashboard = () => {
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          {trendingMovies.map((movie) => (
-            <div
-              key={movie.id}
-              className="bg-zinc-900 rounded-lg overflow-hidden"
-            >
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="w-full h-44 object-cover"
-              />
+          {trendingMovies.map(
+            (movie) => (
+              <div
+                key={movie.id}
+                className="bg-zinc-900 rounded-lg overflow-hidden"
+              >
+                <img
+                  src={movie.image}
+                  alt={movie.title}
+                  className="w-full h-44 object-cover"
+                />
 
-              <div className="p-4">
-                <h4 className="font-semibold">
-                  {movie.title}
-                </h4>
+                <div className="p-4">
+                  <h4 className="font-semibold">
+                    {movie.title}
+                  </h4>
 
-                <div className="w-full h-1 bg-zinc-700 mt-3 rounded">
-                  <div className="w-2/3 h-full bg-red-600 rounded"></div>
+                  <div className="w-full h-1 bg-zinc-700 mt-3 rounded">
+                    <div className="w-2/3 h-full bg-red-600 rounded"></div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       </section>
     </div>

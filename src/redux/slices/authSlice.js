@@ -1,184 +1,232 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://backend-auth-c86g.onrender.com";
+const API_URL = "https://backend-auth-gdiz.onrender.com/api";
+
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/auth/register`,
+        userData
+      );
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.msg || "Registration failed"
+      );
+    }
+  }
+);
 
 export const loginUser = createAsyncThunk(
-    "auth/loginUser",
-    async (userData, { rejectWithValue }) => {
-        try {
-            const res = await axios.post(
-                `${API_URL}/auth/login`,
-                userData
-            );
+  "auth/loginUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/auth/login`,
+        userData
+      );
 
-            return res.data;
-        } catch (err) {
-            return rejectWithValue(
-                err.response?.data?.msg || "Invalid email or password"
-            );
-        }
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.msg || "Invalid email or password"
+      );
     }
+  }
 );
 
 export const changePassword = createAsyncThunk(
-    "auth/changePassword",
-    async (userData, { rejectWithValue }) => {
-        try {
-            const res = await axios.put(
-                `${API_URL}/auth/change-password`,
-                {
-                    oldPassword: userData.oldPassword,
-                    newPassword: userData.newPassword,
-                },
-                {
-                    headers: {
-                        Authorization: userData.token,
-                    },
-                }
-            );
-
-            return res.data;
-        } catch (err) {
-            return rejectWithValue(
-                err.response?.data?.msg || "Password change failed"
-            );
+  "auth/changePassword",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(
+        `${API_URL}/auth/change-password`,
+        {
+          oldPassword:
+            userData.oldPassword,
+          newPassword:
+            userData.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userData.token}`,
+          },
         }
+      );
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.msg ||
+        "Password change failed"
+      );
     }
+  }
 );
 
 export const forgotPassword = createAsyncThunk(
-    "auth/forgotPassword",
-    async (userData, { rejectWithValue }) => {
-        try {
-            const res = await axios.post(
-                `${API_URL}/auth/forgot-password`,
-                userData
-            );
+  "auth/forgotPassword",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/auth/forgot-password`,
+        userData
+      );
 
-            return res.data;
-        } catch (err) {
-            return rejectWithValue(
-                err.response?.data?.msg || "Email not found"
-            );
-        }
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.msg || "Email not found"
+      );
     }
+  }
 );
 
 export const resetPassword = createAsyncThunk(
-    "auth/resetPassword",
-    async (userData, { rejectWithValue }) => {
-        try {
-            const res = await axios.post(
-                `${API_URL}/auth/reset-password`,
-                userData
-            );
+  "auth/resetPassword",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/auth/reset-password`,
+        userData
+      );
 
-            return res.data;
-        } catch (err) {
-            return rejectWithValue(
-                err.response?.data?.msg || "Invalid OTP"
-            );
-        }
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.msg || "Invalid OTP"
+      );
     }
+  }
 );
 
 export const existingLogin = createAsyncThunk(
-    "auth/existingLogin",
-    async (_, { rejectWithValue }) => {
-        try {
-            const token = JSON.parse(localStorage.getItem("token"));
+  "auth/existingLogin",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = JSON.parse(
+        localStorage.getItem("token")
+      );
 
-            if (!token) {
-                return rejectWithValue("No token");
-            }
+      if (!token) {
+        return rejectWithValue("No token");
+      }
 
-            const res = await axios.get(
-                `${API_URL}/user`,
-                {
-                    headers: {
-                        Authorization: token,
-                    },
-                }
-            );
-
-            return res.data;
-        } catch (err) {
-            return rejectWithValue(
-                err.response?.data?.msg || "Unauthorized"
-            );
+      const res = await axios.get(
+        `${API_URL}/user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.msg || "Unauthorized"
+      );
     }
+  }
 );
 
 const initialState = {
-    isLoading: false,
-    isRegister: false,
-    user: null,
-    error: null,
-    emailVerify: false,
-    forgotError: null,
+  isLoading: false,
+  isRegister: false,
+  user: null,
+  error: null,
+  emailVerify: false,
+  forgotError: null,
 };
 
 const authSlice = createSlice({
-    name: "auth",
-    initialState,
-    reducers: {
-        logout: (state) => {
-            state.user = null;
-            localStorage.removeItem("token");
-        },
+  name: "auth",
+  initialState,
+
+  reducers: {
+    logout: (state) => {
+      state.user = null;
+      state.isRegister = false;
+      state.error = null;
+
+      localStorage.removeItem("token");
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(loginUser.pending, (state) => {
-                state.isLoading = true;
-                state.error = null;
-            })
-            .addCase(loginUser.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.user = action.payload;
-                state.error = null;
+  },
 
-                localStorage.setItem(
-                    "token",
-                    JSON.stringify(action.payload.token)
-                );
-            })
-            .addCase(loginUser.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.payload;
-            })
+  extraReducers: (builder) => {
+    builder
 
-            .addCase(forgotPassword.fulfilled, (state) => {
-                state.emailVerify = true;
-                state.forgotError = null;
-            })
-            .addCase(forgotPassword.rejected, (state, action) => {
-                state.emailVerify = false;
-                state.forgotError = action.payload;
-            })
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.isRegister = false;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isRegister = true;
+        state.error = null;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isRegister = false;
+        state.error = action.payload;
+      })
 
-            .addCase(resetPassword.fulfilled, (state) => {
-                state.emailVerify = false;
-                state.forgotError = null;
-            })
-            .addCase(resetPassword.rejected, (state, action) => {
-                state.forgotError = action.payload;
-            })
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.error = null;
 
-            .addCase(existingLogin.fulfilled, (state, action) => {
-                state.user = {
-                    ...action.payload.user,
-                    token: JSON.parse(localStorage.getItem("token")),
-                };
-            })
+        localStorage.setItem(
+          "token",
+          JSON.stringify(action.payload.token)
+        );
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
 
-            .addCase(existingLogin.rejected, (state) => {
-                state.user = null;
-            });
-    },
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.emailVerify = true;
+        state.forgotError = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.emailVerify = false;
+        state.forgotError = action.payload;
+      })
+
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.emailVerify = false;
+        state.forgotError = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.forgotError = action.payload;
+      })
+
+      .addCase(existingLogin.fulfilled, (state, action) => {
+        state.user = {
+          ...action.payload.user,
+          token: JSON.parse(
+            localStorage.getItem("token")
+          ),
+        };
+      })
+      .addCase(existingLogin.rejected, (state) => {
+        state.user = null;
+        localStorage.removeItem("token");
+      })
+  },
 });
 
 export const { logout } = authSlice.actions;
+
 export default authSlice.reducer;
