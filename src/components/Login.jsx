@@ -50,17 +50,14 @@ const Login = () => {
           "url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1920')",
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Netflix Logo */}
       <div className="absolute top-6 left-6 md:left-12 z-20">
         <h1 className="text-red-600 text-3xl md:text-5xl font-extrabold tracking-wider">
           NETFLIX
         </h1>
       </div>
 
-      {/* Login Card */}
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-black/75 backdrop-blur-sm rounded-md px-8 py-10 md:px-14 md:py-14 shadow-2xl">
 
@@ -72,7 +69,6 @@ const Login = () => {
             onSubmit={handleSubmit}
             className="space-y-4"
           >
-            {/* Email */}
             <input
               autoComplete="email"
               type="email"
@@ -84,7 +80,6 @@ const Login = () => {
               className="w-full bg-[#333] text-white px-4 py-4 rounded outline-none border border-transparent focus:border-white"
             />
 
-            {/* Password */}
             <div className="relative">
               <input
                 autoComplete="current-password"
@@ -118,14 +113,12 @@ const Login = () => {
               </button>
             </div>
 
-            {/* Error */}
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded p-3">
                 {error}
               </div>
             )}
 
-            {/* Login Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -136,7 +129,6 @@ const Login = () => {
                 : "Sign In"}
             </button>
 
-            {/* Remember & Forgot */}
             <div className="flex justify-between items-center text-sm text-gray-400">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -165,7 +157,6 @@ const Login = () => {
             </div>
           </form>
 
-          {/* Signup */}
           <div className="mt-10 text-gray-400">
             New here?
 
@@ -179,7 +170,6 @@ const Login = () => {
             </span>
           </div>
 
-          {/* Footer */}
           <p className="text-xs text-gray-500 mt-5 leading-relaxed">
             This page is protected by Google
             reCAPTCHA to ensure you're not a bot.

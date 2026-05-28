@@ -98,19 +98,16 @@ const ForgotPassword = () => {
           "url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1920')",
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/70"></div>
 
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20"></div>
 
-      {/* Netflix Logo */}
       <div className="absolute top-6 left-6 md:left-12 z-20">
         <h1 className="text-red-600 text-3xl md:text-5xl font-extrabold tracking-wider">
           NETFLIX
         </h1>
       </div>
 
-      {/* Card */}
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-black/75 backdrop-blur-md rounded-md px-8 py-10 md:px-14 md:py-12 shadow-2xl">
 
@@ -128,7 +125,6 @@ const ForgotPassword = () => {
             }
             className="space-y-4"
           >
-            {/* Email */}
             <input
               type="email"
               name="email"
@@ -139,7 +135,6 @@ const ForgotPassword = () => {
               className="w-full bg-[#333] text-white px-4 py-4 rounded outline-none border border-transparent focus:border-white disabled:opacity-60"
             />
 
-            {/* OTP */}
             <input
               type="text"
               name="otp"
@@ -151,7 +146,6 @@ const ForgotPassword = () => {
               className="w-full bg-[#333] text-white px-4 py-4 rounded outline-none border border-transparent focus:border-white disabled:opacity-60"
             />
 
-            {/* Send OTP */}
             {!emailVerify && (
               <button
                 type="button"
@@ -164,7 +158,6 @@ const ForgotPassword = () => {
               </button>
             )}
 
-            {/* Verify OTP */}
             {emailVerify &&
               !otpVerified && (
                 <button
@@ -178,7 +171,6 @@ const ForgotPassword = () => {
                 </button>
               )}
 
-            {/* New Password */}
             {otpVerified && (
               <>
                 <input
@@ -203,7 +195,6 @@ const ForgotPassword = () => {
               </>
             )}
 
-            {/* Error */}
             {forgotError && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded p-3">
                 {forgotError}
@@ -211,7 +202,6 @@ const ForgotPassword = () => {
             )}
           </form>
 
-          {/* Back */}
           <div className="mt-10 text-gray-400">
             Remember password?
 

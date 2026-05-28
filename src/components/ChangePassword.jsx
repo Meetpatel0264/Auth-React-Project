@@ -104,15 +104,12 @@ const ChangePassword = () => {
                     "url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1920')",
             }}
         >
-            {/* Dark Overlay */}
             <div className="absolute inset-0 bg-black/75"></div>
 
-            {/* Netflix Logo */}
             <h1 className="absolute top-6 left-10 text-red-600 text-4xl font-bold z-20 tracking-wide">
                 NETFLIX
             </h1>
 
-            {/* Form Card */}
             <div className="relative z-10 w-full max-w-md bg-black/80 backdrop-blur-sm p-10 rounded-md shadow-2xl">
                 <div className="flex items-center gap-3 mb-8">
                     <Lock

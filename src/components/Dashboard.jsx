@@ -17,6 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -24,6 +25,10 @@ const Dashboard = () => {
 
   const [openMenu, setOpenMenu] =
     useState(false);
+
+  const { user } = useSelector(
+    (state) => state.auth
+  );
 
   const menuRef = useRef(null);
 
@@ -118,7 +123,6 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black text-white">
 
-      {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md">
         <div className="flex items-center justify-between px-8 py-4">
 
@@ -155,7 +159,6 @@ const Dashboard = () => {
 
             <Bell size={22} />
 
-            {/* Profile Menu */}
             <div
               className="relative"
               ref={menuRef}
@@ -164,9 +167,9 @@ const Dashboard = () => {
                 onClick={() =>
                   setOpenMenu(!openMenu)
                 }
-                className="w-10 h-10 rounded bg-red-600 flex items-center justify-center font-bold cursor-pointer hover:bg-red-700 transition"
+                className="w-10 h-10 rounded bg-red-600 flex items-center justify-center font-bold uppercase cursor-pointer hover:bg-red-700 transition"
               >
-                M
+                {user?.name?.charAt(0)}
               </div>
 
               {openMenu && (
@@ -174,11 +177,11 @@ const Dashboard = () => {
 
                   <div className="p-4 border-b border-zinc-700">
                     <h3 className="font-semibold text-white">
-                      Meet Patel
+                      {user?.name}
                     </h3>
 
                     <p className="text-sm text-gray-400">
-                      meet@gmail.com
+                      {user?.email}
                     </p>
                   </div>
 
@@ -215,7 +218,6 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section
         className="h-screen bg-cover bg-center relative flex items-center"
         style={{
@@ -251,7 +253,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Trending */}
       <section className="px-8 md:px-16 py-10">
         <h2 className="text-2xl font-bold mb-6">
           Trending Now
@@ -298,7 +299,6 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Continue Watching */}
       <section className="px-8 md:px-16 pb-20">
         <h2 className="text-2xl font-bold mb-6">
           Continue Watching
